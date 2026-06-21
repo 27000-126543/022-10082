@@ -1,0 +1,335 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $spacing-lg 80rpx;
+  color: $color-text-white;
+}
+
+.headerTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-xs;
+}
+
+.headerSubtitle {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+}
+
+.myStoreCard {
+  margin: -48rpx $spacing-lg $spacing-lg;
+}
+
+.legendSection {
+  margin: 0 $spacing-lg $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.legendTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.legendItems {
+  display: flex;
+  justify-content: space-around;
+}
+
+.legendItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.legendDot {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  margin-bottom: $spacing-xs;
+}
+
+.dotGreen {
+  background: $color-health-green;
+}
+
+.dotYellow {
+  background: $color-health-yellow;
+}
+
+.dotRed {
+  background: $color-health-red;
+}
+
+.legendLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.legendDesc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.summaryStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+  margin: 0 $spacing-lg $spacing-lg;
+}
+
+.summaryItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  text-align: center;
+  box-shadow: $shadow-card;
+}
+
+.summaryValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  margin-bottom: 4rpx;
+}
+
+.summaryLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.summaryGreen {
+  color: $color-health-green;
+}
+
+.summaryYellow {
+  color: $color-health-yellow;
+}
+
+.summaryRed {
+  color: $color-health-red;
+}
+
+.rankingSection {
+  padding: 0 $spacing-lg;
+}
+
+.sectionTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.titleText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.updateTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.rankingList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.rankingItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+    opacity: 0.95;
+  }
+}
+
+.rankBadge {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+}
+
+.rank1 {
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(245, 158, 11, 0.3);
+}
+
+.rank2 {
+  background: linear-gradient(135deg, #94A3B8 0%, #64748B 100%);
+  color: $color-text-white;
+}
+
+.rank3 {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  color: $color-text-white;
+}
+
+.rankOther {
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+}
+
+.storeInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.storeName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+  @include text-ellipsis;
+}
+
+.storeMeta {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.metaValue {
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.healthBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.healthGreen {
+  background: $color-health-green-bg;
+  color: $color-health-green;
+}
+
+.healthYellow {
+  background: $color-health-yellow-bg;
+  color: $color-health-yellow;
+}
+
+.healthRed {
+  background: $color-health-red-bg;
+  color: $color-health-red;
+}
+
+.scoreWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.scoreValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+}
+
+.scoreGreen {
+  color: $color-health-green;
+}
+
+.scoreYellow {
+  color: $color-health-yellow;
+}
+
+.scoreRed {
+  color: $color-health-red;
+}
+
+.scoreLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.progressBarWrap {
+  margin-top: $spacing-sm;
+}
+
+.progressBar {
+  height: 8rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: $radius-round;
+  transition: width $transition-slow ease;
+}
+
+.fillGreen {
+  background: $color-health-green;
+}
+
+.fillYellow {
+  background: $color-health-yellow;
+}
+
+.fillRed {
+  background: $color-health-red;
+}
+
+.tipsCard {
+  margin: $spacing-lg;
+  background: $color-primary-bg;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  border: 2rpx solid rgba(37, 99, 235, 0.1);
+}
+
+.tipsTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin-bottom: $spacing-sm;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.tipsContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.7;
+}

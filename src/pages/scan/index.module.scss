@@ -1,0 +1,351 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.scanSection {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scanTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-bottom: $spacing-xs;
+}
+
+.scanSubtitle {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: $spacing-xl;
+}
+
+.scanButton {
+  @include button-reset;
+  width: 360rpx;
+  height: 360rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 6rpx solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+  position: relative;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+.scanIcon {
+  font-size: 120rpx;
+  margin-bottom: $spacing-sm;
+}
+
+.scanButtonText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.scanHint {
+  margin-top: $spacing-lg;
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.inputSection {
+  margin-top: -40rpx;
+  padding: 0 $spacing-lg;
+}
+
+.manualInput {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.inputLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+}
+
+.inputRow {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.codeInput {
+  flex: 1;
+  height: $button-height-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  border: 2rpx solid $color-border;
+}
+
+.confirmBtn {
+  @include button-reset;
+  padding: 0 $spacing-xl;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+.batchDetail {
+  margin: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.detailHeader {
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+  margin-bottom: $spacing-md;
+}
+
+.detailProductName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.detailSpec {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.detailRows {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detailLabel {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.detailValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.daysUrgent {
+  color: $color-health-red;
+  font-weight: $font-weight-bold;
+}
+
+.daysWarning {
+  color: $color-health-yellow;
+  font-weight: $font-weight-bold;
+}
+
+.storageTag {
+  padding: 4rpx $spacing-sm;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+}
+
+.storageRefrigerated {
+  background: $color-primary-bg;
+  color: $color-primary;
+}
+
+.storageNormal {
+  background: $color-health-green-bg;
+  color: $color-health-green;
+}
+
+.qtySection {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 1rpx solid $color-divider;
+}
+
+.qtyTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.qtyRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.qtyLabel {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  width: 140rpx;
+}
+
+.qtyValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.qtyInputWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.qtyBtn {
+  @include button-reset;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: $color-bg-hover;
+  font-size: $font-size-xl;
+  color: $color-text-primary;
+  transition: all $transition-base;
+
+  &:active {
+    background: $color-border;
+  }
+}
+
+.qtyInput {
+  flex: 1;
+  height: 80rpx;
+  text-align: center;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  border: 2rpx solid $color-border;
+}
+
+.diffAlert {
+  background: $color-health-red-bg;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.diffAlertText {
+  font-size: $font-size-sm;
+  color: $color-health-red;
+  font-weight: $font-weight-medium;
+}
+
+.storageAlert {
+  background: $color-health-yellow-bg;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+}
+
+.storageAlertIcon {
+  font-size: $font-size-lg;
+}
+
+.storageAlertText {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: $color-health-yellow;
+  font-weight: $font-weight-medium;
+  line-height: 1.5;
+}
+
+.actionRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+.secondaryBtn {
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+}
+
+.primaryBtn {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.dangerBtn {
+  background: $color-health-red;
+  color: $color-text-white;
+}
+
+.pendingList {
+  padding: 0 $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}

@@ -1,0 +1,275 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $spacing-lg 80rpx;
+  color: $color-text-white;
+}
+
+.greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-lg;
+}
+
+.greetingText {
+  flex: 1;
+}
+
+.hello {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  opacity: 0.9;
+  margin-bottom: $spacing-xs;
+}
+
+.userName {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+}
+
+.onlineStatus {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+}
+
+.statusDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+}
+
+.online {
+  background: #10B981;
+}
+
+.offline {
+  background: #F59E0B;
+}
+
+.todayInfo {
+  font-size: $font-size-sm;
+  opacity: 0.8;
+}
+
+.statsRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: -48rpx;
+  padding: 0 $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-md;
+  padding: 0 $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.section {
+  padding: 0 $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionAction {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+.filterTabs {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  @include scroll-x-container;
+  padding-bottom: 4rpx;
+}
+
+.filterTab {
+  @include button-reset;
+  display: inline-flex;
+  padding: 0 $spacing-lg;
+  height: 64rpx;
+  border-radius: $radius-button;
+  background: $color-bg-card;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.filterTabActive {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.batchList {
+  margin-top: $spacing-md;
+}
+
+.emptyState {
+  padding: $spacing-xxl 0;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.progressBarWrap {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin: 0 $spacing-lg $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.progressTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.progressValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.progressBar {
+  height: 16rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-round;
+  transition: width $transition-slow ease;
+}
+
+.progressStats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+}
+
+.progressStat {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.progressStatNum {
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.inspectionList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.inspectionItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.inspectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.inspectionName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.inspectionType {
+  font-size: $font-size-xs;
+  margin-left: $spacing-sm;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  background: $color-primary-bg;
+  color: $color-primary;
+}
+
+.inspectionBar {
+  height: 12rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.inspectionFill {
+  height: 100%;
+  border-radius: $radius-round;
+  transition: width $transition-slow ease;
+}
+
+.fillGreen {
+  background: $color-health-green;
+}
+
+.fillYellow {
+  background: $color-health-yellow;
+}
+
+.fillRed {
+  background: $color-health-red;
+}
+
+.inspectionFooter {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}

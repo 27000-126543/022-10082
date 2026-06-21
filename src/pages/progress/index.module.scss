@@ -1,0 +1,312 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-xl $spacing-lg;
+  color: $color-text-white;
+}
+
+.headerTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-xs;
+}
+
+.headerSubtitle {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+  margin: -32rpx $spacing-lg $spacing-lg;
+}
+
+.statItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-sm;
+  text-align: center;
+  box-shadow: $shadow-card;
+}
+
+.statValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  margin-bottom: 4rpx;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.valuePending {
+  color: $color-health-yellow;
+}
+
+.valueApproved {
+  color: $color-primary;
+}
+
+.valueProcessing {
+  color: $color-expire-90;
+}
+
+.valueDone {
+  color: $color-health-green;
+}
+
+.applySection {
+  margin: 0 $spacing-lg $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  padding-left: $spacing-sm;
+  border-left: 6rpx solid $color-primary;
+}
+
+.selectBatch {
+  background: $color-bg-page;
+  border: 2rpx dashed $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    border-color: $color-primary;
+    background: $color-primary-bg;
+  }
+}
+
+.selected {
+  background: $color-primary-bg;
+  border: 2rpx solid $color-primary;
+}
+
+.batchName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.batchInfo {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.placeholder {
+  text-align: center;
+  color: $color-text-tertiary;
+  font-size: $font-size-md;
+  padding: $spacing-sm 0;
+}
+
+.actionOptions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.actionOption {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+  border: 2rpx solid $color-border;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.actionActive {
+  border-color: $color-primary;
+  background: $color-primary-bg;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.qtyRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.qtyLabel {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  width: 140rpx;
+}
+
+.qtyInputWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.qtyBtn {
+  @include button-reset;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: $color-bg-hover;
+  font-size: $font-size-xl;
+  color: $color-text-primary;
+}
+
+.qtyInput {
+  flex: 1;
+  height: 80rpx;
+  text-align: center;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  border: 2rpx solid $color-border;
+}
+
+.descLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+}
+
+.descInput {
+  width: 100%;
+  min-height: 160rpx;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  border: 2rpx solid $color-border;
+  line-height: 1.6;
+  box-sizing: border-box;
+  margin-bottom: $spacing-md;
+}
+
+.submitApplyBtn {
+  @include button-reset;
+  width: 100%;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+
+  &[disabled] {
+    background: $color-text-disabled;
+  }
+}
+
+.tabs {
+  display: flex;
+  margin: 0 $spacing-lg $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xs;
+  box-shadow: $shadow-card;
+}
+
+.tab {
+  @include button-reset;
+  flex: 1;
+  height: 72rpx;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-base;
+}
+
+.tabActive {
+  background: $color-primary;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
+.listSection {
+  padding: 0 $spacing-lg;
+}
+
+.listTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.listTitleText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.listCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.emptyState {
+  padding: $spacing-xxl 0;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.floatingBtn {
+  @include button-reset;
+  position: fixed;
+  bottom: 32rpx;
+  left: 32rpx;
+  right: 32rpx;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  z-index: 100;
+  box-shadow: 0 8rpx 24rpx rgba(37, 99, 235, 0.3);
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}

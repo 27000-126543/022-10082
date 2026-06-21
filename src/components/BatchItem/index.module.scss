@@ -1,0 +1,183 @@
+@use '@/styles/variables.scss' as *;
+
+.batchItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+  border-left: 8rpx solid $color-border;
+
+  &:active {
+    transform: scale(0.99);
+    opacity: 0.95;
+  }
+}
+
+.level30days {
+  border-left-color: $color-expire-30;
+}
+
+.level60days {
+  border-left-color: $color-expire-60;
+}
+
+.level90days {
+  border-left-color: $color-expire-90;
+}
+
+.levelnormal {
+  border-left-color: $color-health-green;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.productInfo {
+  flex: 1;
+  margin-right: $spacing-md;
+}
+
+.productName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  margin-bottom: $spacing-xs;
+}
+
+.spec {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.levelTag {
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.tag30days {
+  background: $color-health-red-bg;
+  color: $color-health-red;
+}
+
+.tag60days {
+  background: $color-health-yellow-bg;
+  color: $color-health-yellow;
+}
+
+.tag90days {
+  background: $color-primary-bg;
+  color: $color-primary;
+}
+
+.tagnormal {
+  background: $color-health-green-bg;
+  color: $color-health-green;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.metaLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.metaValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.daysLeft {
+  font-weight: $font-weight-bold;
+}
+
+.daysRed {
+  color: $color-health-red;
+}
+
+.daysYellow {
+  color: $color-health-yellow;
+}
+
+.daysBlue {
+  color: $color-primary;
+}
+
+.daysGreen {
+  color: $color-health-green;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.location {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+}
+
+.locationIcon {
+  margin-right: 8rpx;
+  color: $color-text-tertiary;
+}
+
+.statusTag {
+  padding: 6rpx $spacing-md;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.checked {
+  background: $color-health-green-bg;
+  color: $color-health-green;
+}
+
+.pending {
+  background: $color-health-yellow-bg;
+  color: $color-health-yellow;
+}
+
+.abnormal {
+  background: $color-health-red-bg;
+  color: $color-health-red;
+}
+
+.qtyCompare {
+  display: flex;
+  gap: $spacing-lg;
+}
+
+.qtyDiff {
+  color: $color-health-red;
+  font-weight: $font-weight-semibold;
+}

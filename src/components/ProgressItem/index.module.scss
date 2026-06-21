@@ -1,0 +1,157 @@
+@use '@/styles/variables.scss' as *;
+
+.progressItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+    opacity: 0.95;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.productInfo {
+  flex: 1;
+  margin-right: $spacing-md;
+}
+
+.productName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  margin-bottom: $spacing-xs;
+}
+
+.batchNo {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.actionTag {
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.actionTransfer {
+  background: $color-primary-bg;
+  color: $color-primary;
+}
+
+.actionPromotion {
+  background: $color-health-yellow-bg;
+  color: $color-health-yellow;
+}
+
+.actionLoss {
+  background: $color-health-red-bg;
+  color: $color-health-red;
+}
+
+.reason {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  @include text-ellipsis-multi(2);
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.metaItem {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.metaValue {
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.statusTag {
+  padding: 6rpx $spacing-md;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.pending {
+  background: $color-health-yellow-bg;
+  color: $color-health-yellow;
+}
+
+.approved {
+  background: $color-primary-bg;
+  color: $color-primary;
+}
+
+.rejected {
+  background: $color-health-red-bg;
+  color: $color-health-red;
+}
+
+.processing {
+  background: #DBEAFE;
+  color: $color-primary;
+}
+
+.done {
+  background: $color-health-green-bg;
+  color: $color-health-green;
+}
+
+.footer {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-sm;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+.approveBtn {
+  background: $color-health-green;
+  color: $color-text-white;
+}
+
+.rejectBtn {
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+}
