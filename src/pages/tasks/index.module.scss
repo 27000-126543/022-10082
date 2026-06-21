@@ -92,6 +92,11 @@
   align-items: center;
   gap: $spacing-sm;
   font-size: $font-size-xs;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .offlineBannerIcon {
@@ -99,22 +104,29 @@
   flex-shrink: 0;
 }
 
-.offlineBannerText {
+.offlineBannerContent {
   flex: 1;
-  line-height: 1.5;
+  min-width: 0;
 }
 
-.offlineBannerBtn {
-  padding: $spacing-xs $spacing-md;
-  background: $color-health-yellow;
-  color: #fff;
-  border-radius: $radius-button;
+.offlineBannerText {
+  display: block;
+  line-height: 1.4;
   font-weight: $font-weight-semibold;
-  flex-shrink: 0;
+  font-size: $font-size-sm;
+}
 
-  &:active {
-    opacity: 0.8;
-  }
+.offlineBannerSubtext {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  opacity: 0.85;
+}
+
+.offlineBannerArrow {
+  font-size: 36rpx;
+  opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .statsRow {
@@ -275,6 +287,13 @@
   border-radius: $radius-lg;
   padding: $spacing-lg;
   box-shadow: $shadow-card;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
 }
 
 .inspectionHeader {

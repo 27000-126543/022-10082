@@ -1,0 +1,254 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  display: flex;
+  flex-direction: column;
+}
+
+.statusBar {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: $spacing-lg;
+  color: $color-text-white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statusLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.statusDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+}
+
+.online {
+  background: #10B981;
+}
+
+.offline {
+  background: #F59E0B;
+}
+
+.statusText {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+}
+
+.statusCount {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+}
+
+.countNum {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+.actionBar {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: 80rpx;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.primaryBtn {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.dangerBtn {
+  background: $color-bg-card;
+  color: $color-health-red;
+  border: 1rpx solid $color-health-red;
+}
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  padding: 0 $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+  gap: $spacing-xs;
+}
+
+.tab {
+  @include button-reset;
+  flex: 1;
+  height: 80rpx;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  border-bottom: 4rpx solid transparent;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rpx;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.tabActive {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  border-bottom-color: $color-primary;
+}
+
+.tabCount {
+  font-size: $font-size-xs;
+  opacity: 0.7;
+}
+
+.list {
+  flex: 1;
+  padding: $spacing-md $spacing-lg;
+}
+
+.itemCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.itemIcon {
+  font-size: 48rpx;
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.itemSubtitle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.itemTag {
+  flex-shrink: 0;
+  padding: 4rpx 16rpx;
+  background: $color-primary-bg;
+  color: $color-primary;
+  font-size: $font-size-xs;
+  border-radius: $radius-round;
+  font-weight: $font-weight-medium;
+}
+
+.itemFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.itemTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.itemActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.itemBtn {
+  @include button-reset;
+  height: 56rpx;
+  padding: 0 $spacing-md;
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+
+  &:active {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.itemRetry {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.itemDelete {
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+}
+
+.emptyState {
+  padding: 120rpx 0;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 96rpx;
+  display: block;
+  margin-bottom: $spacing-md;
+}
+
+.emptyText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+  display: block;
+}
+
+.emptySubtext {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}

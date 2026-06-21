@@ -59,12 +59,13 @@ interface AppState {
   recalcStoreInspections: () => void;
   checkBatch: (batchId: string, actualQty: number) => boolean;
   addAbnormalReport: (report: AbnormalReport) => void;
-  addProcessApplication: (app: ProcessApplication) => void;
+  addProcessApplication: (app: ProcessApplication, fromReportId?: string) => void;
   updateProcessStatus: (
     id: string,
     status: ProcessApplication['status'],
     approver?: string
   ) => void;
+  linkAbnormalToProcess: (reportId: string, processId: string, action: ProcessApplication['action']) => void;
   setOnline: (online: boolean) => void;
   setOfflineSyncCount: (count: number) => void;
   setCurrentUser: (user: { name: string; role: string }) => void;
@@ -137,17 +138,39 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addAbnormalReport: (report) =>
     set((state) => {
+      const exists = state.abnormalReports.some((r) => r.id === report.id);
+      if (exists) {
+        console.log('[Store] addAbnormalReport 跳过重复:', report.id);
+        return state;
+      }
       console.log('[Store] addAbnormalReport:', report.id, report.type);
       return {
         abnormalReports: [report, ...state.abnormalReports]
       };
     }),
 
-  addProcessApplication: (app) =>
+  addProcessApplication: (app, fromReportId) =>
     set((state) => {
-      console.log('[Store] addProcessApplication:', app.id, app.action);
+      const exists = state.processApplications.some((p) => p.id === app.id);
+      if (exists) {
+        console.log('[Store] addProcessApplication 跳过重复:', app.id);
+        return state;
+      }
+      console.log('[Store] addProcessApplication:', app.id, app.action, 'fromReport:', fromReportId);
+
+      let newAbnormalReports = state.abnormalReports;
+      if (fromReportId) {
+        newAbnormalReports = state.abnormalReports.map((r) =>
+          r.id === fromReportId
+            ? { ...r, status: 'processing', processId: app.id, processAction: app.action }
+            : r
+        );
+        console.log('[Store] 已关联异常报告到处理申请:', fromReportId, '->', app.id);
+      }
+
       return {
-        processApplications: [app, ...state.processApplications]
+        processApplications: [app, ...state.processApplications],
+        abnormalReports: newAbnormalReports
       };
     }),
 
@@ -162,16 +185,38 @@ export const useAppStore = create<AppState>((set, get) => ({
         minute: '2-digit',
         second: '2-digit'
       }).replace(/\//g, '-');
+
+      const newApplications = state.processApplications.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              status,
+              approver: approver || p.approver,
+              approveTime: approver ? now : p.approveTime
+            }
+          : p
+      );
+
+      const newAbnormalReports = state.abnormalReports.map((r) =>
+        r.processId === id ? { ...r, status } : r
+      );
+
+      console.log('[Store] 同步更新异常报告状态:', newAbnormalReports.filter((r) => r.processId === id).length, '条');
+
       return {
-        processApplications: state.processApplications.map((p) =>
-          p.id === id
-            ? {
-                ...p,
-                status,
-                approver: approver || p.approver,
-                approveTime: approver ? now : p.approveTime
-              }
-            : p
+        processApplications: newApplications,
+        abnormalReports: newAbnormalReports
+      };
+    }),
+
+  linkAbnormalToProcess: (reportId, processId, action) =>
+    set((state) => {
+      console.log('[Store] linkAbnormalToProcess:', reportId, '->', processId, action);
+      return {
+        abnormalReports: state.abnormalReports.map((r) =>
+          r.id === reportId
+            ? { ...r, status: 'processing', processId, processAction: action }
+            : r
         )
       };
     }),

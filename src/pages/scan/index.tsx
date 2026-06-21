@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Button, Input } from '@tarojs/components';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { View, Text, Button, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
@@ -15,13 +15,16 @@ const ScanPage: React.FC = () => {
     isOnline,
     currentUser,
     setOnline,
-    setOfflineSyncCount
+    setOfflineSyncCount,
+    storeInspections
   } = useAppStore();
 
   const [manualCode, setManualCode] = useState('');
   const [currentBatch, setCurrentBatch] = useState<BatchInfo | null>(null);
   const [actualQty, setActualQty] = useState<number>(0);
   const [lastConfirmMsg, setLastConfirmMsg] = useState<string>('');
+  const [continuousMode, setContinuousMode] = useState(true);
+  const [selectedLocation, setSelectedLocation] = useState<string>('all');
 
   useEffect(() => {
     const initNetwork = async () => {
@@ -62,8 +65,40 @@ const ScanPage: React.FC = () => {
     }
   }, [batches, currentBatch]);
 
-  const pendingBatches = batches.filter((b) => !b.isChecked);
-  const allBatchesSorted = [...batches].sort((a, b) => (a.isChecked === b.isChecked ? 0 : a.isChecked ? 1 : -1));
+  const locationOptions = useMemo(() => {
+    const opts = [{ key: 'all', label: '全部区域' }];
+    storeInspections.forEach((ins) => {
+      opts.push({ key: ins.name, label: ins.name });
+    });
+    return opts;
+  }, [storeInspections]);
+
+  const pendingBatches = useMemo(() => {
+    let list = batches.filter((b) => !b.isChecked);
+    if (selectedLocation !== 'all') {
+      list = list.filter((b) => b.location.startsWith(selectedLocation.replace('冷藏柜', '冷藏柜').replace('货架', '货架')));
+    }
+    return list.sort((a, b) => a.daysLeft - b.daysLeft);
+  }, [batches, selectedLocation]);
+
+  const allBatchesSorted = useMemo(() => {
+    let list = [...batches];
+    if (selectedLocation !== 'all') {
+      list = list.filter((b) => b.location.startsWith(selectedLocation));
+    }
+    return list.sort((a, b) => (a.isChecked === b.isChecked ? a.daysLeft - b.daysLeft : a.isChecked ? 1 : -1));
+  }, [batches, selectedLocation]);
+
+  const findNextBatch = useCallback((currentId: string) => {
+    const idx = pendingBatches.findIndex((b) => b.id === currentId);
+    if (idx >= 0 && idx < pendingBatches.length - 1) {
+      return pendingBatches[idx + 1];
+    }
+    if (pendingBatches.length > 0 && pendingBatches[0].id !== currentId) {
+      return pendingBatches[0];
+    }
+    return null;
+  }, [pendingBatches]);
 
   const handleScan = async () => {
     console.log('[Scan] 开始扫码');
@@ -122,7 +157,7 @@ const ScanPage: React.FC = () => {
     if (!currentBatch) return;
 
     const wasChecked = currentBatch.isChecked;
-    console.log('[Scan] 确认巡检:', currentBatch.id, 'wasChecked:', wasChecked, '实际数量:', actualQty);
+    console.log('[Scan] 确认巡检:', currentBatch.id, 'wasChecked:', wasChecked, '实际数量:', actualQty, '连续模式:', continuousMode);
 
     const online = await checkNetwork();
     setOnline(online);
@@ -138,16 +173,17 @@ const ScanPage: React.FC = () => {
     if (!online) {
       saveToOffline(`check_${currentBatch.id}_${Date.now()}`, checkData);
       setOfflineSyncCount(getOfflineCount());
-      Taro.showToast({ title: '离线暂存，联网后补传', icon: 'none' });
     }
 
     const isFirstTime = checkBatch(currentBatch.id, actualQty);
 
     if (!online) {
-      // 离线模式不弹窗，直接提示
       const msg = wasChecked ? '数据已更新（待同步）' : '已完成巡检（待同步）';
       setLastConfirmMsg(msg);
       Taro.showToast({ title: msg, icon: 'none' });
+      if (continuousMode) {
+        setTimeout(() => goToNextBatch(currentBatch.id), 600);
+      }
       return;
     }
 
@@ -162,12 +198,18 @@ const ScanPage: React.FC = () => {
             if (res.confirm) {
               Taro.setStorageSync('reportBatch', currentBatch);
               Taro.switchTab({ url: '/pages/report/index' });
+            } else if (continuousMode) {
+              goToNextBatch(currentBatch.id);
             } else {
               setLastConfirmMsg('✓ 首次巡检完成');
               Taro.showToast({ title: '巡检完成 ✓', icon: 'success' });
             }
           }
         });
+      } else if (continuousMode) {
+        setLastConfirmMsg('✓ 已完成，跳下一个');
+        Taro.showToast({ title: '巡检完成 ✓', icon: 'success' });
+        setTimeout(() => goToNextBatch(currentBatch.id), 500);
       } else {
         setLastConfirmMsg('✓ 首次巡检完成');
         Taro.showToast({ title: '巡检完成 ✓', icon: 'success' });
@@ -175,6 +217,24 @@ const ScanPage: React.FC = () => {
     } else {
       setLastConfirmMsg('数据已更新（不重复计数）');
       Taro.showToast({ title: '数据已更新', icon: 'none' });
+      if (continuousMode) {
+        setTimeout(() => goToNextBatch(currentBatch.id), 500);
+      }
+    }
+  };
+
+  const goToNextBatch = (currentId: string) => {
+    const next = findNextBatch(currentId);
+    if (next) {
+      console.log('[Scan] 连续盘点，跳到下一个:', next.id, next.productName);
+      setCurrentBatch(next);
+      setActualQty(next.systemQty);
+      setLastConfirmMsg('');
+      Taro.vibrateShort?.({ type: 'light' });
+    } else {
+      console.log('[Scan] 没有更多待巡检批次');
+      setLastConfirmMsg('🎉 本区域已全部盘完！');
+      Taro.showToast({ title: '全部完成 🎉', icon: 'success' });
     }
   };
 
@@ -201,6 +261,10 @@ const ScanPage: React.FC = () => {
 
   const hasQtyDiff = currentBatch && actualQty !== currentBatch.systemQty;
 
+  const pendingInLocation = pendingBatches.length;
+  const totalInLocation = allBatchesSorted.length;
+  const completedInLocation = totalInLocation - pendingInLocation;
+
   return (
     <View className={styles.page}>
       <View className={styles.scanSection}>
@@ -216,6 +280,39 @@ const ScanPage: React.FC = () => {
           {isOnline ? '✓ 网络已连接' : '⚠ 当前离线，数据将暂存本地'}
         </Text>
       </View>
+
+      <View className={styles.modeBar}>
+        <View className={styles.modeLeft}>
+          <Text
+            className={classnames(styles.modeSwitch, continuousMode && styles.modeOn)}
+            onClick={() => setContinuousMode(!continuousMode)}
+          >
+            <Text className={styles.modeDot}>{continuousMode ? '●' : '○'}</Text>
+            连续盘点
+          </Text>
+          <Text className={styles.modeHint}>
+            {continuousMode ? '确认后自动跳下一个' : '单条盘点模式'}
+          </Text>
+        </View>
+        <View className={styles.progressMini}>
+          <Text className={styles.progressMiniText}>
+            {selectedLocation === 'all' ? '全部' : selectedLocation}
+            : 已完成 <Text className={styles.progressMiniNum}>{completedInLocation}</Text>/{totalInLocation}
+          </Text>
+        </View>
+      </View>
+
+      <ScrollView scrollX className={styles.locationTabs}>
+        {locationOptions.map((opt) => (
+          <Button
+            key={opt.key}
+            className={classnames(styles.locationTab, selectedLocation === opt.key && styles.locationTabActive)}
+            onClick={() => setSelectedLocation(opt.key)}
+          >
+            {opt.label}
+          </Button>
+        ))}
+      </ScrollView>
 
       <View className={styles.inputSection}>
         <View className={styles.manualInput}>
@@ -248,6 +345,15 @@ const ScanPage: React.FC = () => {
 
           {lastConfirmMsg && (
             <View className={styles.confirmMsg}>{lastConfirmMsg}</View>
+          )}
+
+          {continuousMode && (
+            <View className={styles.continuousInfo}>
+              <Text className={styles.continuousLabel}>连续盘点进度</Text>
+              <Text className={styles.continuousValue}>
+                第 {completedInLocation + (currentBatch.isChecked ? 0 : 1)} 个 / 共 {totalInLocation} 个
+              </Text>
+            </View>
           )}
 
           <View className={styles.detailRows}>
@@ -338,6 +444,21 @@ const ScanPage: React.FC = () => {
             </Button>
           </View>
 
+          {continuousMode && pendingInLocation > 0 && (
+            <View className={styles.skipRow}>
+              <Button className={styles.skipBtn} onClick={() => {
+                const next = findNextBatch(currentBatch.id);
+                if (next) {
+                  setCurrentBatch(next);
+                  setActualQty(next.systemQty);
+                  setLastConfirmMsg('');
+                }
+              }}>
+                跳过此批 →
+              </Button>
+            </View>
+          )}
+
           {currentBatch.daysLeft <= 90 && (
             <View className={styles.actionRow}>
               <Button
@@ -354,10 +475,15 @@ const ScanPage: React.FC = () => {
       {!currentBatch && allBatchesSorted.length > 0 && (
         <View className={styles.pendingList}>
           <View className={styles.sectionHeader}>
-            <Text className={styles.sectionTitle}>批次列表（待巡检优先）</Text>
-            <Text className={styles.sectionCount}>共 {allBatchesSorted.length} 个</Text>
+            <Text className={styles.sectionTitle}>
+              {selectedLocation === 'all' ? '批次列表' : `${selectedLocation}批次`}
+              （待巡检优先）
+            </Text>
+            <Text className={styles.sectionCount}>
+              {pendingInLocation} 待 / {totalInLocation} 共
+            </Text>
           </View>
-          {allBatchesSorted.slice(0, 8).map((batch) => (
+          {allBatchesSorted.slice(0, 10).map((batch) => (
             <BatchItem
               key={batch.id}
               batch={batch}

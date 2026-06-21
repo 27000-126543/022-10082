@@ -35,6 +35,8 @@ export interface AbnormalReport {
   reporter: string;
   reportTime: string;
   status: ProcessStatus;
+  processId?: string;
+  processAction?: ProcessAction;
 }
 
 export interface ProcessApplication {

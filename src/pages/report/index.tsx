@@ -5,11 +5,19 @@ import styles from './index.module.scss';
 import classnames from 'classnames';
 import dayjs from 'dayjs';
 import { useAppStore } from '@/store';
-import type { BatchInfo, AbnormalType, AbnormalReport } from '@/types';
-import { getAbnormalTypeText, getStatusText, saveToOffline, checkNetwork, getOfflineCount } from '@/utils';
+import type { BatchInfo, AbnormalType, AbnormalReport, ProcessAction } from '@/types';
+import { getAbnormalTypeText, getStatusText, getActionText, saveToOffline, checkNetwork, getOfflineCount } from '@/utils';
 
 const ReportPage: React.FC = () => {
-  const { batches, abnormalReports, addAbnormalReport, currentUser, isOnline, setOfflineSyncCount } = useAppStore();
+  const {
+    batches,
+    abnormalReports,
+    addAbnormalReport,
+    addProcessApplication,
+    currentUser,
+    isOnline,
+    setOfflineSyncCount
+  } = useAppStore();
 
   const [selectedBatch, setSelectedBatch] = useState<BatchInfo | null>(null);
   const [selectedType, setSelectedType] = useState<AbnormalType | null>(null);
@@ -116,6 +124,51 @@ const ReportPage: React.FC = () => {
     setSelectedType(null);
     setDescription('');
     setPhotos([]);
+  };
+
+  const handleApplyProcess = (report: AbnormalReport) => {
+    console.log('[Report] 从异常发起处理申请:', report.id);
+    const actionOptions: { key: ProcessAction; label: string }[] = [
+      { key: 'transfer', label: '调拨' },
+      { key: 'promotion', label: '促销消耗' },
+      { key: 'loss', label: '报损' }
+    ];
+    Taro.showActionSheet({
+      itemList: actionOptions.map((o) => o.label),
+      success: async (res) => {
+        const action = actionOptions[res.tapIndex].key;
+        const batch = batches.find((b) => b.id === report.batchId);
+        if (!batch) return;
+
+        const application = {
+          id: `P${Date.now()}`,
+          batchId: batch.id,
+          productName: batch.productName,
+          batchNo: batch.batchNo,
+          action,
+          quantity: batch.systemQty,
+          reason: `异常处理：${getAbnormalTypeText(report.type)} - ${report.description.slice(0, 30)}`,
+          applicant: currentUser.name,
+          applyTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+          status: 'pending' as const
+        };
+
+        const online = await checkNetwork();
+        if (!online) {
+          saveToOffline(`process_${application.id}`, { ...application, _fromReportId: report.id });
+          setOfflineSyncCount(getOfflineCount());
+          Taro.showToast({ title: '已暂存，待联网补传', icon: 'none' });
+          return;
+        }
+
+        addProcessApplication(application, report.id);
+        Taro.showToast({ title: `${getActionText(action)}申请已提交`, icon: 'success' });
+
+        setTimeout(() => {
+          Taro.switchTab({ url: '/pages/progress/index' });
+        }, 800);
+      }
+    });
   };
 
   const canSubmit = selectedBatch && selectedType && description.trim();
@@ -236,10 +289,34 @@ const ReportPage: React.FC = () => {
                   ))}
                 </View>
               )}
+
+              {report.processId && report.processAction && (
+                <View className={styles.processLink}>
+                  <Text className={styles.processLinkIcon}>🔗</Text>
+                  <Text className={styles.processLinkText}>
+                    已关联{getActionText(report.processAction)}处理
+                  </Text>
+                  <Text className={styles.processLinkStatus}>
+                    状态：{getStatusText(report.status)}
+                  </Text>
+                </View>
+              )}
+
               <View className={styles.historyFooter}>
                 <Text>上报人：{report.reporter}</Text>
                 <Text>{report.reportTime}</Text>
               </View>
+
+              {!report.processId && report.status !== 'done' && report.status !== 'approved' && (
+                <View className={styles.historyActions}>
+                  <Button
+                    className={styles.applyProcessBtn}
+                    onClick={() => handleApplyProcess(report)}
+                  >
+                    发起处理 →
+                  </Button>
+                </View>
+              )}
             </View>
           ))
         ) : (

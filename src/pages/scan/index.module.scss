@@ -59,9 +59,97 @@
 }
 
 .scanHint {
-  margin-top: $spacing-lg;
+  margin-top: $spacing-md;
   font-size: $font-size-sm;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.modeBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.modeLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.modeSwitch {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.modeOn {
+  color: $color-primary;
+}
+
+.modeDot {
+  font-size: $font-size-sm;
+}
+
+.modeHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.progressMini {
+  text-align: right;
+}
+
+.progressMiniText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.progressMiniNum {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.locationTabs {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-lg;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+  @include scroll-x-container;
+}
+
+.locationTab {
+  @include button-reset;
+  display: inline-flex;
+  padding: 0 $spacing-md;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: $color-bg-hover;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.locationTabActive {
+  background: $color-primary;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
 }
 
 .inputSection {
@@ -155,6 +243,28 @@
   border-radius: $radius-md;
   margin-bottom: $spacing-md;
   font-weight: $font-weight-medium;
+}
+
+.continuousInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.02) 100%);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  border-left: 6rpx solid $color-primary;
+}
+
+.continuousLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.continuousValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
 }
 
 .detailProductName {
@@ -323,6 +433,26 @@
   color: $color-health-yellow;
   font-weight: $font-weight-medium;
   line-height: 1.5;
+}
+
+.skipRow {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-md;
+}
+
+.skipBtn {
+  @include button-reset;
+  height: 64rpx;
+  padding: 0 $spacing-xl;
+  border-radius: $radius-button;
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+
+  &:active {
+    opacity: 0.8;
+  }
 }
 
 .actionRow {

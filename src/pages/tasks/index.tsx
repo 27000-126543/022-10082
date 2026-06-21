@@ -56,7 +56,8 @@ const TasksPage: React.FC = () => {
         return true;
       }
       if (key.startsWith('process_')) {
-        addProcessApplication(data as ProcessApplication);
+        const app = data as (ProcessApplication & { _fromReportId?: string });
+        addProcessApplication(app, app._fromReportId);
         return true;
       }
       return true;
@@ -193,18 +194,19 @@ const TasksPage: React.FC = () => {
         </Text>
 
         {offlineSyncCount > 0 && (
-          <View className={styles.offlineBanner}>
+          <View className={styles.offlineBanner} onClick={() => Taro.navigateTo({ url: '/pages/offline-sync/index' })}>
             <Text className={styles.offlineBannerIcon}>📡</Text>
-            <Text className={styles.offlineBannerText}>
-              {isSyncing
-                ? `正在同步 ${offlineSyncCount} 条离线数据...`
-                : `${offlineSyncCount} 条离线数据待同步，网络恢复后将自动补传`}
-            </Text>
-            {!isSyncing && isOnline && (
-              <Text className={styles.offlineBannerBtn} onClick={syncOfflineData}>
-                立即同步
+            <View className={styles.offlineBannerContent}>
+              <Text className={styles.offlineBannerText}>
+                {isSyncing
+                  ? `正在同步 ${offlineSyncCount} 条离线数据...`
+                  : `${offlineSyncCount} 条离线数据待同步`}
               </Text>
-            )}
+              <Text className={styles.offlineBannerSubtext}>
+                {isOnline ? '点击查看详情' : '网络恢复后将自动补传'}
+              </Text>
+            </View>
+            <Text className={styles.offlineBannerArrow}>›</Text>
           </View>
         )}
       </View>
@@ -250,10 +252,22 @@ const TasksPage: React.FC = () => {
       <View className={styles.section}>
         <View className={styles.sectionHeader}>
           <Text className={styles.sectionTitle}>库房巡检情况</Text>
+          <Text className={styles.sectionAction} onClick={() => console.log('查看全部库房')}>
+            共 {storeInspections.length} 个 →
+          </Text>
         </View>
         <View className={styles.inspectionList}>
           {storeInspections.map((item) => (
-            <View key={item.id} className={styles.inspectionItem}>
+            <View
+              key={item.id}
+              className={styles.inspectionItem}
+              onClick={() => {
+                console.log('[Tasks] 点击库房:', item.name, item.type);
+                Taro.navigateTo({
+                  url: `/pages/warehouse-detail/index?name=${encodeURIComponent(item.name)}&type=${item.type}`
+                });
+              }}
+            >
               <View className={styles.inspectionHeader}>
                 <Text className={styles.inspectionName}>
                   {item.name}
