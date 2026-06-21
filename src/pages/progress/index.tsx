@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import { useAppStore } from '@/store';
 import ProgressItem from '@/components/ProgressItem';
 import type { BatchInfo, ProcessAction, ProcessApplication } from '@/types';
-import { saveToOffline, checkNetwork } from '@/utils';
+import { saveToOffline, checkNetwork, getOfflineCount } from '@/utils';
 
 type TabType = 'all' | 'pending' | 'mine';
 
@@ -18,7 +18,8 @@ const ProgressPage: React.FC = () => {
     addProcessApplication,
     updateProcessStatus,
     currentUser,
-    isOnline
+    isOnline,
+    setOfflineSyncCount
   } = useAppStore();
 
   const [activeTab, setActiveTab] = useState<TabType>('all');
@@ -26,6 +27,12 @@ const ProgressPage: React.FC = () => {
   const [selectedAction, setSelectedAction] = useState<ProcessAction | null>(null);
   const [quantity, setQuantity] = useState<number>(0);
   const [reason, setReason] = useState('');
+
+  const isHeadNurse = currentUser.role === '护士长';
+
+  useEffect(() => {
+    setOfflineSyncCount(getOfflineCount());
+  }, [setOfflineSyncCount]);
 
   useEffect(() => {
     const processBatch = Taro.getStorageSync('processBatch');
@@ -47,7 +54,7 @@ const ProgressPage: React.FC = () => {
 
   const tabs: { key: TabType; label: string }[] = [
     { key: 'all', label: '全部' },
-    { key: 'pending', label: '待审批' },
+    { key: 'pending', label: `待审批(${stats.pending})` },
     { key: 'mine', label: '我发起的' }
   ];
 
@@ -136,11 +143,12 @@ const ProgressPage: React.FC = () => {
     const online = await checkNetwork();
     if (!online) {
       saveToOffline(`process_${application.id}`, application);
+      setOfflineSyncCount(getOfflineCount());
     }
 
     addProcessApplication(application);
 
-    Taro.showToast({ title: '申请已提交', icon: 'success' });
+    Taro.showToast({ title: online ? '申请已提交' : '已暂存，待联网补传', icon: 'success' });
 
     setSelectedBatch(null);
     setSelectedAction(null);
@@ -149,13 +157,17 @@ const ProgressPage: React.FC = () => {
   };
 
   const handleApprove = (id: string) => {
-    console.log('[Progress] 批准申请:', id);
+    if (!isHeadNurse) {
+      Taro.showToast({ title: '仅护士长可审批', icon: 'none' });
+      return;
+    }
+    console.log('[Progress] 批准申请:', id, '审批人:', currentUser.name);
     Taro.showModal({
       title: '确认批准',
-      content: '确定批准此处理申请吗？',
+      content: `确定批准此处理申请吗？\n审批人：${currentUser.name}（护士长）`,
       success: (res) => {
         if (res.confirm) {
-          updateProcessStatus(id, 'approved');
+          updateProcessStatus(id, 'approved', currentUser.name);
           Taro.showToast({ title: '已批准', icon: 'success' });
         }
       }
@@ -163,13 +175,17 @@ const ProgressPage: React.FC = () => {
   };
 
   const handleReject = (id: string) => {
-    console.log('[Progress] 驳回申请:', id);
+    if (!isHeadNurse) {
+      Taro.showToast({ title: '仅护士长可审批', icon: 'none' });
+      return;
+    }
+    console.log('[Progress] 驳回申请:', id, '审批人:', currentUser.name);
     Taro.showModal({
       title: '确认驳回',
-      content: '确定驳回此处理申请吗？',
+      content: `确定驳回此处理申请吗？\n审批人：${currentUser.name}（护士长）`,
       success: (res) => {
         if (res.confirm) {
-          updateProcessStatus(id, 'rejected');
+          updateProcessStatus(id, 'rejected', currentUser.name);
           Taro.showToast({ title: '已驳回', icon: 'none' });
         }
       }
@@ -183,6 +199,15 @@ const ProgressPage: React.FC = () => {
       <View className={styles.header}>
         <Text className={styles.headerTitle}>处理进度</Text>
         <Text className={styles.headerSubtitle}>调拨 · 促销消耗 · 报损 一站式管理</Text>
+        <View className={styles.headerRole}>
+          <Text className={styles.roleText}>当前身份：{currentUser.name}（{currentUser.role}）</Text>
+          {!isHeadNurse && (
+            <Text className={styles.roleHint}>· 待审批内容仅护士长可操作</Text>
+          )}
+          {isHeadNurse && (
+            <Text className={styles.roleHintPower}>✓ 您有审批权限</Text>
+          )}
+        </View>
       </View>
 
       <View className={styles.statsRow}>
@@ -288,13 +313,20 @@ const ProgressPage: React.FC = () => {
           <Text className={styles.listCount}>共 {filteredApps.length} 条</Text>
         </View>
 
+        {activeTab === 'pending' && !isHeadNurse && (
+          <View className={styles.permissionHint}>
+            <Text className={styles.permissionIcon}>🔒</Text>
+            <Text className={styles.permissionText}>您当前为值班护士，仅可查看状态，审批需护士长操作</Text>
+          </View>
+        )}
+
         <ScrollView>
           {filteredApps.length > 0 ? (
             filteredApps.map((app) => (
               <ProgressItem
                 key={app.id}
                 app={app}
-                showApprove={activeTab === 'pending'}
+                showApprove={activeTab === 'pending' && isHeadNurse}
                 onApprove={handleApprove}
                 onReject={handleReject}
               />

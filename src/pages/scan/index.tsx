@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Button, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -6,15 +6,64 @@ import classnames from 'classnames';
 import { useAppStore } from '@/store';
 import BatchItem from '@/components/BatchItem';
 import type { BatchInfo } from '@/types';
-import { formatDate, saveToOffline, checkNetwork } from '@/utils';
+import { formatDate, saveToOffline, checkNetwork, getOfflineCount } from '@/utils';
 
 const ScanPage: React.FC = () => {
-  const { batches, checkBatch, isOnline, currentUser } = useAppStore();
+  const {
+    batches,
+    checkBatch,
+    isOnline,
+    currentUser,
+    setOnline,
+    setOfflineSyncCount
+  } = useAppStore();
+
   const [manualCode, setManualCode] = useState('');
   const [currentBatch, setCurrentBatch] = useState<BatchInfo | null>(null);
   const [actualQty, setActualQty] = useState<number>(0);
+  const [lastConfirmMsg, setLastConfirmMsg] = useState<string>('');
+
+  useEffect(() => {
+    const initNetwork = async () => {
+      const online = await checkNetwork();
+      setOnline(online);
+      setOfflineSyncCount(getOfflineCount());
+    };
+    initNetwork();
+  }, [setOnline, setOfflineSyncCount]);
+
+  const loadBatchFromStorage = useCallback(() => {
+    try {
+      const batchId = Taro.getStorageSync('currentScanBatchId');
+      if (batchId) {
+        Taro.removeStorageSync('currentScanBatchId');
+        const batch = batches.find((b) => b.id === batchId);
+        if (batch) {
+          console.log('[Scan] 从Storage加载批次:', batchId, batch.productName);
+          setCurrentBatch(batch);
+          setActualQty(batch.actualQty || batch.systemQty);
+        }
+      }
+    } catch (e) {
+      console.warn('[Scan] 读取Storage批次失败:', e);
+    }
+  }, [batches]);
+
+  useEffect(() => {
+    loadBatchFromStorage();
+  }, [loadBatchFromStorage]);
+
+  useEffect(() => {
+    if (currentBatch) {
+      const latest = batches.find((b) => b.id === currentBatch.id);
+      if (latest && latest !== currentBatch) {
+        setCurrentBatch(latest);
+      }
+    }
+  }, [batches, currentBatch]);
 
   const pendingBatches = batches.filter((b) => !b.isChecked);
+  const allBatchesSorted = [...batches].sort((a, b) => (a.isChecked === b.isChecked ? 0 : a.isChecked ? 1 : -1));
 
   const handleScan = async () => {
     console.log('[Scan] 开始扫码');
@@ -37,8 +86,12 @@ const ScanPage: React.FC = () => {
     );
     if (batch) {
       setCurrentBatch(batch);
-      setActualQty(batch.systemQty);
-      console.log('[Scan] 找到批次:', batch.productName);
+      setActualQty(batch.actualQty ?? batch.systemQty);
+      setLastConfirmMsg('');
+      console.log('[Scan] 找到批次:', batch.productName, 'isChecked:', batch.isChecked);
+      if (batch.isChecked) {
+        Taro.showToast({ title: '此批次已巡检，可更新数据', icon: 'none' });
+      }
     } else {
       Taro.showToast({ title: '未找到该批次信息', icon: 'none' });
     }
@@ -68,40 +121,60 @@ const ScanPage: React.FC = () => {
   const handleConfirmCheck = async () => {
     if (!currentBatch) return;
 
-    console.log('[Scan] 确认巡检:', currentBatch.id, '实际数量:', actualQty);
+    const wasChecked = currentBatch.isChecked;
+    console.log('[Scan] 确认巡检:', currentBatch.id, 'wasChecked:', wasChecked, '实际数量:', actualQty);
+
     const online = await checkNetwork();
+    setOnline(online);
 
     const checkData = {
       batchId: currentBatch.id,
       actualQty,
       checkTime: new Date().toISOString(),
-      operator: currentUser.name
+      operator: currentUser.name,
+      isUpdate: wasChecked
     };
 
     if (!online) {
-      saveToOffline(`check_${currentBatch.id}`, checkData);
+      saveToOffline(`check_${currentBatch.id}_${Date.now()}`, checkData);
+      setOfflineSyncCount(getOfflineCount());
       Taro.showToast({ title: '离线暂存，联网后补传', icon: 'none' });
     }
 
-    checkBatch(currentBatch.id, actualQty);
+    const isFirstTime = checkBatch(currentBatch.id, actualQty);
 
-    if (actualQty !== currentBatch.systemQty) {
-      Taro.showModal({
-        title: '账实不符',
-        content: `系统记录${currentBatch.systemQty}支，实际${actualQty}支，是否立即上报异常？`,
-        confirmText: '去上报',
-        cancelText: '暂不上报',
-        success: (res) => {
-          if (res.confirm) {
-            Taro.switchTab({ url: '/pages/report/index' });
-          } else {
-            resetState();
+    if (!online) {
+      // 离线模式不弹窗，直接提示
+      const msg = wasChecked ? '数据已更新（待同步）' : '已完成巡检（待同步）';
+      setLastConfirmMsg(msg);
+      Taro.showToast({ title: msg, icon: 'none' });
+      return;
+    }
+
+    if (isFirstTime) {
+      if (actualQty !== currentBatch.systemQty) {
+        Taro.showModal({
+          title: '账实不符',
+          content: `系统记录${currentBatch.systemQty}支，实际${actualQty}支，是否立即上报异常？`,
+          confirmText: '去上报',
+          cancelText: '暂不上报',
+          success: (res) => {
+            if (res.confirm) {
+              Taro.setStorageSync('reportBatch', currentBatch);
+              Taro.switchTab({ url: '/pages/report/index' });
+            } else {
+              setLastConfirmMsg('✓ 首次巡检完成');
+              Taro.showToast({ title: '巡检完成 ✓', icon: 'success' });
+            }
           }
-        }
-      });
+        });
+      } else {
+        setLastConfirmMsg('✓ 首次巡检完成');
+        Taro.showToast({ title: '巡检完成 ✓', icon: 'success' });
+      }
     } else {
-      Taro.showToast({ title: '巡检完成 ✓', icon: 'success' });
-      resetState();
+      setLastConfirmMsg('数据已更新（不重复计数）');
+      Taro.showToast({ title: '数据已更新', icon: 'none' });
     }
   };
 
@@ -123,6 +196,7 @@ const ScanPage: React.FC = () => {
     setCurrentBatch(null);
     setActualQty(0);
     setManualCode('');
+    setLastConfirmMsg('');
   };
 
   const hasQtyDiff = currentBatch && actualQty !== currentBatch.systemQty;
@@ -163,9 +237,18 @@ const ScanPage: React.FC = () => {
       {currentBatch && (
         <View className={styles.batchDetail}>
           <View className={styles.detailHeader}>
-            <Text className={styles.detailProductName}>{currentBatch.productName}</Text>
-            <Text className={styles.detailSpec}>{currentBatch.spec} · {currentBatch.batchNo}</Text>
+            <View className={styles.detailHeaderLeft}>
+              <Text className={styles.detailProductName}>{currentBatch.productName}</Text>
+              <Text className={styles.detailSpec}>{currentBatch.spec} · {currentBatch.batchNo}</Text>
+            </View>
+            {currentBatch.isChecked && (
+              <View className={styles.checkedTag}>已巡检</View>
+            )}
           </View>
+
+          {lastConfirmMsg && (
+            <View className={styles.confirmMsg}>{lastConfirmMsg}</View>
+          )}
 
           <View className={styles.detailRows}>
             <View className={styles.detailRow}>
@@ -197,6 +280,16 @@ const ScanPage: React.FC = () => {
                 </Text>
               </View>
             </View>
+            {currentBatch.actualQty !== undefined && currentBatch.isChecked && (
+              <View className={styles.detailRow}>
+                <Text className={styles.detailLabel}>上次实盘</Text>
+                <Text className={styles.detailValue}>{currentBatch.actualQty}支
+                  {currentBatch.actualQty !== currentBatch.systemQty && (
+                    <Text className={styles.diffSmall}> （差{Math.abs(currentBatch.actualQty - currentBatch.systemQty)}）</Text>
+                  )}
+                </Text>
+              </View>
+            )}
           </View>
 
           <View className={styles.qtySection}>
@@ -241,7 +334,7 @@ const ScanPage: React.FC = () => {
               className={classnames(styles.actionBtn, styles.primaryBtn)}
               onClick={handleConfirmCheck}
             >
-              确认巡检
+              {currentBatch.isChecked ? '更新数据' : '确认巡检'}
             </Button>
           </View>
 
@@ -258,19 +351,20 @@ const ScanPage: React.FC = () => {
         </View>
       )}
 
-      {!currentBatch && pendingBatches.length > 0 && (
+      {!currentBatch && allBatchesSorted.length > 0 && (
         <View className={styles.pendingList}>
           <View className={styles.sectionHeader}>
-            <Text className={styles.sectionTitle}>待巡检批次</Text>
-            <Text className={styles.sectionCount}>{pendingBatches.length} 个待处理</Text>
+            <Text className={styles.sectionTitle}>批次列表（待巡检优先）</Text>
+            <Text className={styles.sectionCount}>共 {allBatchesSorted.length} 个</Text>
           </View>
-          {pendingBatches.slice(0, 5).map((batch) => (
+          {allBatchesSorted.slice(0, 8).map((batch) => (
             <BatchItem
               key={batch.id}
               batch={batch}
               onClick={() => {
                 setCurrentBatch(batch);
-                setActualQty(batch.systemQty);
+                setActualQty(batch.actualQty ?? batch.systemQty);
+                setLastConfirmMsg('');
               }}
             />
           ))}

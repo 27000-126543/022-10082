@@ -30,9 +30,27 @@
   margin-bottom: $spacing-xs;
 }
 
+.userNameRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
 .userName {
   font-size: $font-size-xxl;
   font-weight: $font-weight-bold;
+}
+
+.roleBadge {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: $radius-round;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .onlineStatus {
@@ -62,6 +80,41 @@
 .todayInfo {
   font-size: $font-size-sm;
   opacity: 0.8;
+}
+
+.offlineBanner {
+  margin-top: $spacing-md;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1rpx solid rgba(245, 158, 11, 0.4);
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: $font-size-xs;
+}
+
+.offlineBannerIcon {
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+.offlineBannerText {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.offlineBannerBtn {
+  padding: $spacing-xs $spacing-md;
+  background: $color-health-yellow;
+  color: #fff;
+  border-radius: $radius-button;
+  font-weight: $font-weight-semibold;
+  flex-shrink: 0;
+
+  &:active {
+    opacity: 0.8;
+  }
 }
 
 .statsRow {
@@ -114,6 +167,7 @@
 .filterTab {
   @include button-reset;
   display: inline-flex;
+  align-items: center;
   padding: 0 $spacing-lg;
   height: 64rpx;
   border-radius: $radius-button;
@@ -131,6 +185,12 @@
 .filterTabActive {
   background: $color-primary;
   color: $color-text-white;
+}
+
+.filterCount {
+  margin-left: 6rpx;
+  font-size: 22rpx;
+  opacity: 0.7;
 }
 
 .batchList {

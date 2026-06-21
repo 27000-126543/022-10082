@@ -6,15 +6,19 @@ import classnames from 'classnames';
 import dayjs from 'dayjs';
 import { useAppStore } from '@/store';
 import type { BatchInfo, AbnormalType, AbnormalReport } from '@/types';
-import { getAbnormalTypeText, getStatusText, saveToOffline, checkNetwork } from '@/utils';
+import { getAbnormalTypeText, getStatusText, saveToOffline, checkNetwork, getOfflineCount } from '@/utils';
 
 const ReportPage: React.FC = () => {
-  const { batches, abnormalReports, addAbnormalReport, currentUser, isOnline } = useAppStore();
+  const { batches, abnormalReports, addAbnormalReport, currentUser, isOnline, setOfflineSyncCount } = useAppStore();
 
   const [selectedBatch, setSelectedBatch] = useState<BatchInfo | null>(null);
   const [selectedType, setSelectedType] = useState<AbnormalType | null>(null);
   const [description, setDescription] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
+
+  useEffect(() => {
+    setOfflineSyncCount(getOfflineCount());
+  }, [setOfflineSyncCount]);
 
   useEffect(() => {
     const reportBatch = Taro.getStorageSync('reportBatch');
@@ -101,11 +105,12 @@ const ReportPage: React.FC = () => {
     const online = await checkNetwork();
     if (!online) {
       saveToOffline(`report_${report.id}`, report);
+      setOfflineSyncCount(getOfflineCount());
     }
 
     addAbnormalReport(report);
 
-    Taro.showToast({ title: '上报成功', icon: 'success' });
+    Taro.showToast({ title: online ? '上报成功' : '已暂存，待联网补传', icon: 'success' });
 
     setSelectedBatch(null);
     setSelectedType(null);

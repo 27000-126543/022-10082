@@ -124,9 +124,37 @@
 }
 
 .detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   padding-bottom: $spacing-md;
   border-bottom: 1rpx solid $color-divider;
   margin-bottom: $spacing-md;
+}
+
+.detailHeaderLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.checkedTag {
+  flex-shrink: 0;
+  background: $color-health-green;
+  color: #fff;
+  font-size: $font-size-xs;
+  padding: 6rpx 18rpx;
+  border-radius: $radius-round;
+  font-weight: $font-weight-semibold;
+}
+
+.confirmMsg {
+  background: $color-primary-bg;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  font-weight: $font-weight-medium;
 }
 
 .detailProductName {
@@ -162,6 +190,12 @@
   font-size: $font-size-md;
   font-weight: $font-weight-medium;
   color: $color-text-primary;
+}
+
+.diffSmall {
+  font-size: $font-size-xs;
+  color: $color-health-red;
+  font-weight: $font-weight-semibold;
 }
 
 .daysUrgent {

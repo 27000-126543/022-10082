@@ -23,6 +23,33 @@
   opacity: 0.85;
 }
 
+.headerRole {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  line-height: 1.5;
+}
+
+.roleText {
+  opacity: 0.95;
+  font-weight: $font-weight-medium;
+}
+
+.roleHint {
+  display: block;
+  margin-top: 4rpx;
+  opacity: 0.8;
+}
+
+.roleHintPower {
+  display: block;
+  margin-top: 4rpx;
+  color: #BBF7D0;
+  font-weight: $font-weight-semibold;
+}
+
 .statsRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -266,6 +293,29 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: $spacing-md;
+}
+
+.permissionHint {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: $color-primary-bg;
+  border: 1rpx solid rgba(37, 99, 235, 0.2);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  font-size: $font-size-xs;
+  color: $color-primary;
+  line-height: 1.5;
+}
+
+.permissionIcon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.permissionText {
+  flex: 1;
 }
 
 .listTitleText {

@@ -115,3 +115,67 @@ export const checkNetwork = async (): Promise<boolean> => {
     return false;
   }
 };
+
+export const getAllOfflineKeys = (): string[] => {
+  try {
+    const offlineData = Taro.getStorageSync('offline_queue') || {};
+    return Object.keys(offlineData);
+  } catch (error) {
+    console.error('[Offline] 获取待同步列表失败:', error);
+    return [];
+  }
+};
+
+export const getOfflineCount = (): number => {
+  return getAllOfflineKeys().length;
+};
+
+export const getAllOfflineQueue = (): Record<string, { data: unknown; timestamp: number }> => {
+  try {
+    return Taro.getStorageSync('offline_queue') || {};
+  } catch (error) {
+    console.error('[Offline] 读取队列失败:', error);
+    return {};
+  }
+};
+
+export const clearAllOffline = (): void => {
+  try {
+    Taro.setStorageSync('offline_queue', {});
+    console.log('[Offline] 所有待同步数据已清空');
+  } catch (error) {
+    console.error('[Offline] 清空队列失败:', error);
+  }
+};
+
+export const processOfflineQueue = async (
+  onItem: (key: string, data: unknown) => Promise<boolean> | boolean
+): Promise<{ total: number; success: number; failed: number }> => {
+  const queue = getAllOfflineQueue();
+  const keys = Object.keys(queue);
+  let success = 0;
+  let failed = 0;
+
+  console.log(`[Offline] 开始同步 ${keys.length} 条待补传数据`);
+
+  for (const key of keys) {
+    try {
+      const item = queue[key];
+      const result = await onItem(key, item.data);
+      if (result !== false) {
+        clearOfflineData(key);
+        success++;
+        console.log(`[Offline] 同步成功: ${key}`);
+      } else {
+        failed++;
+        console.log(`[Offline] 同步跳过: ${key}`);
+      }
+    } catch (error) {
+      failed++;
+      console.error(`[Offline] 同步失败: ${key}`, error);
+    }
+  }
+
+  console.log(`[Offline] 同步结束，共 ${keys.length} 条，成功 ${success}，失败 ${failed}`);
+  return { total: keys.length, success, failed };
+};
